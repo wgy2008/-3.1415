@@ -1,0 +1,27 @@
+name: Build armeabi-v7a
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Android NDK r21
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r21e
+      - name: CMake build armeabi-v7a
+        run: |
+          mkdir build && cd build
+          cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
+          -DANDROID_ABI=armeabi-v7a \
+          -DANDROID_PLATFORM=android-21 \
+          ..
+          make
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: armv7-output
+          path: build/
